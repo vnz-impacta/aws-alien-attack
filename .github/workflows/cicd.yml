@@ -7,6 +7,9 @@ on:
       - main
       - homolog
       - develop
+      - 'feat/**'
+      - 'fix/**'
+      - 'hotfix/**'
   pull_request:
     branches:
       - main
@@ -14,8 +17,37 @@ on:
       - develop
 
 jobs:
-  cicd_pipeline:
-    name: CI/CD Pipeline
+  ci_pipeline:
+    if: startsWith(github.ref, 'refs/heads/feat/') || startsWith(github.ref, 'refs/heads/fix/') || startsWith(github.ref, 'refs/heads/hotfix/')
+    name: CI Pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies (CDK)
+        run: |
+          cd infrastructure/cdk
+          npm ci
+
+      - name: Build CDK
+        run: |
+          cd infrastructure/cdk
+          npm run build
+
+      - name: Run CDK tests
+        run: |
+          cd infrastructure/cdk
+          npm test
+
+  cd_pipeline:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/homolog' || github.ref == 'refs/heads/develop'
+    name: CD Pipeline
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.ref_name }}
