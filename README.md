@@ -28,6 +28,30 @@ Customers and [AWS Partners](https://aws.amazon.com/partners/) may request a pri
   * **Gamers** - users generating data by playing the game
   * **Manager** - administrative users who create sessions and review the data
 
+## CI/CD Setup: Required Secrets and Variables
+
+To enable automated deployment using GitHub Actions and GitHub Environments, you must configure the following secrets and variables:
+
+### Repository/Environment Variables
+- **AWS_DEFAULT_REGION**: The AWS region to deploy to (e.g., `us-east-1`).
+- **CDK_ENV_NAME**: The environment name prefix for AWS resources (must be unique per environment, e.g., `PRD-AlienAttackWorkshop`, `HML-AlienAttackWorkshop`, `DES-AlienAttackWorkshop`).
+
+### Repository/Environment Secrets
+- **AWS_ACCESS_KEY_ID**: AWS access key with permissions to deploy and manage resources.
+- **AWS_SECRET_ACCESS_KEY**: AWS secret access key.
+- **AWS_SESSION_TOKEN**: (Optional, only if using temporary credentials)
+
+> **Best Practice:**
+> - Set these variables and secrets in each GitHub Environment (`develop`, `homolog`, `main`) for isolation and security.
+> - Each environment can have its own values for these variables and secrets.
+
+### Example: Setting up for Multiple Environments
+1. Go to your repository → Settings → Environments.
+2. Create environments named `develop`, `homolog`, and `main`.
+3. For each environment, add the required secrets and variables as listed above.
+
+This setup ensures your CI/CD pipeline can deploy to the correct AWS environment with the right credentials and configuration.
+
 ## License
 
 This sample code is licensed under the MIT-0 License. See the LICENSE file.
