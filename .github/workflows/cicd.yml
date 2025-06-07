@@ -128,7 +128,8 @@ jobs:
       - name: Fetch CDK Outputs
         id: cdk_outputs
         run: |
-          STACK_NAME=$(cdk ls -c envname=$CDK_ENV_NAME)
+          cd infrastructure/cdk
+          STACK_NAME=$(cdk ls -c envname=$CDK_ENV_NAME --app "npx ts-node --prefer-ts-exts bin/cdk.ts")
           aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region $AWS_DEFAULT_REGION \
             --query "Stacks[0].Outputs" --output json > cdk-outputs.json
 
