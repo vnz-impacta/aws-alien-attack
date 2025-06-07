@@ -118,7 +118,7 @@ jobs:
         run: |
           cd infrastructure/cdk
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          cdk bootstrap aws://$ACCOUNT_ID/${{ env.AWS_DEFAULT_REGION }}
+          cdk bootstrap aws://$ACCOUNT_ID/${{ env.AWS_DEFAULT_REGION }} -c envname=$CDK_ENV_NAME
 
       - name: Deploy CDK
         run: |
