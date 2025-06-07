@@ -125,6 +125,21 @@ jobs:
           cd infrastructure/cdk
           cdk deploy -c envname=$CDK_ENV_NAME -c sessionparameter=true -c kinesisintegration=true -c firehose=true -c deploycdn=true --require-approval never
 
+      - name: Fetch CDK Outputs
+        id: cdk_outputs
+        run: |
+          STACK_NAME=$(cdk ls -c envname=$CDK_ENV_NAME)
+          aws cloudformation describe-stacks --stack-name "$STACK_NAME" --region $AWS_DEFAULT_REGION \
+            --query "Stacks[0].Outputs" --output json > cdk-outputs.json
+
+      - name: Generate awsconfig.js
+        run: |
+          # Parse outputs and generate JS config
+          CONFIG_FILE="application/resources/js/awsconfig.js"
+          echo "window.awsConfig = {" > $CONFIG_FILE
+          cat cdk-outputs.json | jq -r '.[] | "  \(.OutputKey): \"\(.OutputValue)\","' | sed '$ s/,$//' >> $CONFIG_FILE
+          echo "};" >> $CONFIG_FILE
+
       - name: Set bucket name (lowercase)
         id: bucket
         run: echo "BUCKET_NAME=$(echo $CDK_ENV_NAME | tr 'A-Z' 'a-z').app" >> $GITHUB_ENV
