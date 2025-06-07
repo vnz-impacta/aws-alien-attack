@@ -114,6 +114,12 @@ jobs:
           cd infrastructure/cdk
           cdk synth -c envname=$CDK_ENV_NAME -c sessionparameter=true -c kinesisintegration=true -c firehose=true -c deploycdn=true
 
+      - name: Bootstrap CDK
+        run: |
+          cd infrastructure/cdk
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          cdk bootstrap aws://$ACCOUNT_ID/${{ env.AWS_DEFAULT_REGION }}
+
       - name: Deploy CDK
         run: |
           cd infrastructure/cdk
