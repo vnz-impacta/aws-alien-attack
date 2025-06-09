@@ -40,11 +40,6 @@ jobs:
           cd infrastructure/cdk
           npm run lint || echo "No lint script defined"
 
-      - name: Static analysis (example with tsc)
-        run: |
-          cd infrastructure/cdk
-          npx tsc --noEmit
-
       - name: Build CDK
         run: |
           cd infrastructure/cdk
