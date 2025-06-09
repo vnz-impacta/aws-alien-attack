@@ -124,17 +124,3 @@ jobs:
         run: |
           cd infrastructure/cdk
           cdk deploy -c envname=$CDK_ENV_NAME -c sessionparameter=true -c kinesisintegration=true -c firehose=true -c deploycdn=true --require-approval never
-
-      - name: Set bucket name (lowercase)
-        id: bucket
-        run: echo "BUCKET_NAME=$(echo $CDK_ENV_NAME | tr 'A-Z' 'a-z').app" >> $GITHUB_ENV
-
-      - name: Wait for S3 bucket to exist
-        run: |
-          for i in {1..10}; do
-            aws s3 ls "s3://$BUCKET_NAME" && break || sleep 10
-          done
-
-      - name: Deploy Frontend to S3
-        run: |
-          aws s3 sync application/ s3://$BUCKET_NAME --delete
